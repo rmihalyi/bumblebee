@@ -1,0 +1,108 @@
+<!-- -*- mode: XML -*- -->
+
+<!-- Start a standalone nodelet driver for a specific IEEE1394 digital camera.
+
+     this is a test script: NOT FOR GENERAL USE
+
+     arg: camera = base file name of camera YAML parameters
+                   (default: unibrain)
+-->
+
+<launch>
+
+  <arg name="camera" default="bumblebee" />
+  <arg name="manager" default="/camera_nodelet_manager"/> <!-- Must be globally qualified -->
+  <arg name="respawn" default="false" />
+  <arg name="left" default="left" />
+  <arg name="right" default="right" />
+  <arg name="center" default="center" />
+  <!-- TODO Arguments for sync policy, etc? -->
+
+  <arg     if="$(arg respawn)" name="bond" value="" />
+  <arg unless="$(arg respawn)" name="bond" value="--no-bond" />
+  
+  
+  <!-- nodelet manager process -->
+  <node pkg="nodelet" type="nodelet" name="camera_nodelet_manager"
+        args="manager" />
+
+   <node name="republish_left" type="republish" pkg="image_transport" args="compressed in:=/XB3/left/image_raw raw out:=/left/image_raw" />
+   <node name="republish_right" type="republish" pkg="image_transport" args="compressed in:=/XB3/right/image_raw raw out:=/right/image_raw" />
+   <node name="republish_center" type="republish" pkg="image_transport" args="compressed in:=/XB3/center/image_raw raw out:=/center/image_raw" />
+   
+   <node pkg="nodelet" type="nodelet" name="convert_images"
+   args="load azores_republisher/convert_images camera_nodelet_manager">
+   
+   <rosparam
+       file="$(arg camera).yaml" />
+   
+   </node>
+
+ <group ns="stereo">
+   
+  <node ns="$(arg left)" pkg="nodelet" type="nodelet" name="debayer"
+        args="load image_proc/debayer $(arg manager) $(arg bond)"
+	respawn="$(arg respawn)" />
+
+  <node ns="$(arg left)" pkg="nodelet" type="nodelet" name="rectify_mono"
+        args="load image_proc/rectify $(arg manager) $(arg bond)"
+	respawn="$(arg respawn)" />
+	
+  <node ns="$(arg left)" pkg="nodelet" type="nodelet" name="rectify_color"
+        args="load image_proc/rectify $(arg manager) $(arg bond)"
+	respawn="$(arg respawn)">
+    <remap from="image_mono" to="image_color" />
+    <remap from="image_rect" to="image_rect_color" />
+  </node>  
+  
+  
+  <node ns="$(arg center)" pkg="nodelet" type="nodelet" name="debayer"
+        args="load image_proc/debayer $(arg manager) $(arg bond)"
+	respawn="$(arg respawn)" />
+
+  <node ns="$(arg center)" pkg="nodelet" type="nodelet" name="rectify_mono"
+        args="load image_proc/rectify $(arg manager) $(arg bond)"
+	respawn="$(arg respawn)" />
+	
+  <node ns="$(arg center)" pkg="nodelet" type="nodelet" name="rectify_color"
+        args="load image_proc/rectify $(arg manager) $(arg bond)"
+	respawn="$(arg respawn)">
+    <remap from="image_mono" to="image_color" />
+    <remap from="image_rect" to="image_rect_color" />
+  </node>  
+    
+  <node ns="$(arg right)" pkg="nodelet" type="nodelet" name="debayer"
+        args="load image_proc/debayer $(arg manager) $(arg bond)"
+	respawn="$(arg respawn)" />
+
+  <node ns="$(arg right)" pkg="nodelet" type="nodelet" name="rectify_mono"
+        args="load image_proc/rectify $(arg manager) $(arg bond)"
+	respawn="$(arg respawn)"/>
+
+  <node ns="$(arg right)" pkg="nodelet" type="nodelet" name="rectify_color"
+        args="load image_proc/rectify $(arg manager) $(arg bond)"
+	respawn="$(arg respawn)">
+    <remap from="image_mono" to="image_color" />
+    <remap from="image_rect" to="image_rect_color" />
+  </node>  
+
+
+ <node pkg="nodelet" type="nodelet" name="disparity_cpu"
+        args="load opencv_image_proc/disparity $(arg manager) $(arg bond)"
+	respawn="$(arg respawn)" />
+	
+ <node pkg="nodelet" type="nodelet" name="point_cloud2"
+        args="load opencv_image_proc/point_cloud2 $(arg manager) $(arg bond)"
+	respawn="$(arg respawn)" />
+
+
+  </group>
+   
+
+  <node name="reconfigure_gui" pkg="dynamic_reconfigure" type="reconfigure_gui" />
+  <!-- <node name="stereo_odometer" type="stereo_odometer" pkg="viso2_ros" args="stereo:=/stereo image:=image_rect_color" >   
+</node>--> 
+
+ <!--<node name"static_transform_pub" pkg="tf" type="static_transform_publisher" args="0 0 0 0 1.57 0 corrected /camera 100" />-->
+ <!-- <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0 0 1.57 0 corrected camera 100" /> -->
+</launch>

@@ -1,0 +1,9 @@
+<library path="lib/libbumblebee1394_nodelet">
+  <class name="bumblebee1394/driver"
+         type="Bumblebee1394Nodelet"
+         base_class_type="nodelet::Nodelet">
+    <description> 
+      IEEE 1394 camera driver nodelet.
+    </description>
+  </class>
+</library>

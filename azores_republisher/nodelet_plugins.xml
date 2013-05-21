@@ -1,0 +1,10 @@
+<library path="lib/libazores_republisher">
+
+  <class name="azores_republisher/convert_images"
+	 type="azores_republisher::ConvertImagesNodelet"
+	 base_class_type="nodelet::Nodelet">
+    <description>
+      Nodelet to add camera info data to the azores data
+    </description>
+  </class>
+</library>

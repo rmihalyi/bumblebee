@@ -1,0 +1,22 @@
+<package>
+  <export>
+    <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lazores_republisher" />
+    <nodelet plugin="${prefix}/nodelet_plugins.xml" />
+  </export>
+
+  <depend package="camera_info_manager"/>
+  <rosdep name="opencv2"/>
+  <depend package="cv_bridge"/>
+  <depend package="dynamic_reconfigure"/>
+  <depend package="image_geometry"/>
+  <depend package="image_transport"/>
+  <depend package="message_filters"/>
+  <depend package="nodelet"/>
+  <depend package="roscpp"/>
+  <depend package="sensor_msgs"/>
+  <depend package="stereo_msgs"/>
+  <depend package="common_rosdeps" />
+
+</package>
+
+

@@ -1,0 +1,13 @@
+#multicam can be trio/rgb8/800 or stereo/raw16/400
+#for the capturing raw data url strings have to be '' (empty) 
+guid: ""
+frame_id: bumblebee
+video_mode: format7_mode3
+multicam: stereo
+iso_speed: 400
+format7_color_coding: raw16
+left_camera_info_url:  package://bumblebee1394/calib_data/bumblebee2_left.yaml
+center_camera_info_url: '' #package://bumblebee1394/calib_data/azores_XB3_LC_center.yaml
+right_camera_info_url: package://bumblebee1394/calib_data/bumblebee2_right.yaml
+
+
